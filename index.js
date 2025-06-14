@@ -173,7 +173,7 @@ if (!process.env.FIREBASE_CREDS) {
           console.error(`Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
         }
       }
-    }, 1 *60 * 1000); //setiap 2 jam (2 jam dikali 60 menit dikali 60 detik dikali 1000 milisecond) 2 * 60 *60 * 1000
+    }, 2 * 60 *60 * 1000); //setiap 2 jam (2 jam dikali 60 menit dikali 60 detik dikali 1000 milisecond) 2 * 60 *60 * 1000
     getAllRaspiIds().then(raspiUsers => {
           raspiUsers.forEach(user => listenWateringStatus(user.raspiId, sock));
         });
