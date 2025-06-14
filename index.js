@@ -1,3 +1,14 @@
+//membuat website untuk dapat di ping agar server tidak mati
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res)=> res.send('wa bot nyala'));
+
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+    console.log(`HTTP server runnging on port ${PORT}`);
+});
+
 console.log('🔥 FIREBASE_CREDS defined:', !!process.env.FIREBASE_CREDS);
 console.log('🔥 FIREBASE_CREDS raw value:', process.env.FIREBASE_CREDS?.slice(0, 50)); // Potong 50 karakter aja biar aman
 
