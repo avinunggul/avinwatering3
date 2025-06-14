@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "@open-wa/wa-automate": "^2.0.15",
+    "@whiskeysockets/baileys": "^6.7.17",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "firebase-admin": "^13.4.0",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.7.2",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "name": "avinw",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
