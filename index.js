@@ -1,3 +1,6 @@
+console.log('🔥 FIREBASE_CREDS defined:', !!process.env.FIREBASE_CREDS);
+console.log('🔥 FIREBASE_CREDS raw value:', process.env.FIREBASE_CREDS?.slice(0, 50)); // Potong 50 karakter aja biar aman
+
   const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
   const { initializeApp, cert } = require('firebase-admin/app');
   const { getFirestore } = require('firebase-admin/firestore');
