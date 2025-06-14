@@ -8,11 +8,19 @@ console.log('🔥 FIREBASE_CREDS raw value:', process.env.FIREBASE_CREDS?.slice(
   const qrcode = require('qrcode-terminal');
   const fs = require('fs');
   const axios = require('axios');
+  const admin = require('firebase-admin');
 
 if (!process.env.FIREBASE_CREDS) {
   console.error("FIREBASE_CREDS belum di-set");
   process.exit(1);
 }
+
+const serviceAccountPath = './serviceAccountKey.json';
+fs.writeFileSync(serviceAccountPath, process.env.FIREBASE_CREDS);
+admin.initializeApp({
+  credential: admin.credential.cert(require(serviceAccountPath)),
+  databaseURL: "https://avinwateringplant-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
   // Setup Firebase Admin
   const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
   initializeApp({
