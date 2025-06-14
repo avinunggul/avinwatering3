@@ -18,7 +18,7 @@ if (!process.env.FIREBASE_CREDS) {
 const serviceAccountPath = './serviceAccountKey.json';
 fs.writeFileSync(serviceAccountPath, process.env.FIREBASE_CREDS);
 admin.initializeApp({
-  credential: admin.credential.cert(require(serviceAccountPath)),
+  credential: admin.credential.cert(require('./serviceAccountKey.json')),
   databaseURL: "https://avinwateringplant-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
   // Setup Firebase Admin
