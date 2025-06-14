@@ -6,6 +6,10 @@
   const fs = require('fs');
   const axios = require('axios');
 
+if (!process.env.FIREBASE_CREDS) {
+  console.error("FIREBASE_CREDS belum di-set");
+  process.exit(1);
+}
   // Setup Firebase Admin
   const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
   initializeApp({
