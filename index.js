@@ -7,7 +7,7 @@
   const axios = require('axios');
 
   // Setup Firebase Admin
-  const serviceAccount = require('./avinwateringplant-firebase-adminsdk-fbsvc-eb0460c730.json');
+  const serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
   initializeApp({
     credential: cert(serviceAccount),
     databaseURL: 'https://avinwateringplant-default-rtdb.asia-southeast1.firebasedatabase.app'
