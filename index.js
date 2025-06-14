@@ -15,16 +15,10 @@ if (!process.env.FIREBASE_CREDS) {
   process.exit(1);
 }
 
-const serviceAccountPath = './serviceAccountKey.json';
-fs.writeFileSync(serviceAccountPath, process.env.FIREBASE_CREDS);
-admin.initializeApp({
-  credential: admin.credential.cert(require('./serviceAccountKey.json')),
-  databaseURL: "https://avinwateringplant-default-rtdb.asia-southeast1.firebasedatabase.app"
-});
   // Setup Firebase Admin
-  const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+  const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS);
   initializeApp({
-    credential: cert(serviceAccount),
+    credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://avinwateringplant-default-rtdb.asia-southeast1.firebasedatabase.app'
   });
   const firestore = getFirestore();
