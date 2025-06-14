@@ -190,13 +190,6 @@ function setupFirestoreListener(sock) {
             if (data.raspiId && change.type === 'added') {
                 listenWateringStatus(data.raspiId, sock);
                 console.log(`[Listener] Ditambahkan untuk ${data.raspiId}`);
-                // Kirim pesan selamat datang ke user baru
-               if (data.whatsapp && !data.welcomeSent) {
-                    const waId = data.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
-                    sock.sendMessage(waId, { text: `Halo, ${data.name}! Bot penyiraman tanamanmu sudah aktif.\n\nKetik *STATUS* untuk info tanamanmu.` });
-                    // Update welcomeSent ke true
-                    firestore.collection('users').doc(change.doc.id).update({ welcomeSent: true }).catch(console.error);
-                }
             }
         });
     });
