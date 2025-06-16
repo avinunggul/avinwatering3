@@ -428,6 +428,7 @@ async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 3, dela
             await sleep(delayMs);
         }
     }
+    return `Maaf, data prakiraan cuaca tidak tersedian saat ini.\n\n`
 }
 
 async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 3, delayMs = 5000) {
