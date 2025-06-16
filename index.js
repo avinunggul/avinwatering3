@@ -394,7 +394,7 @@ async function notifikasiWhatsapp(userData, sock) {
     const kodeWilayah = await getKodeWilayahByRaspiId(raspiId);
     let pesanCuacanotif = '';
     if (kodeWilayah) {
-        pesanCuacanotif = await getPrakiraanCuacaSingkat(kodeWilayah);
+        pesanCuacanotif = await getPrakiraanCuacaSingkatRetry(kodeWilayah);
     } else {
         pesanCuacanotif = 'Kode wilayah tidak ditemukan untuk user ini.\n\n';
     }
@@ -404,3 +404,29 @@ async function notifikasiWhatsapp(userData, sock) {
 
     await sock.sendMessage(from, { text: response });
 }
+
+
+
+
+//untuk mengaktifkan render
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 3, delayMs = 5000) {
+    for (let attempt = 1; attempt <= maxRetry; attempt++) {
+        const pesan = await getPrakiraanCuacaSingkat(kodeWilayah);
+
+        //cek data valid di render, langsung return
+        if (!pesan.includes('tidak ditemukan') && !pesan.includes('tidak tersedia')) {
+            return pesan;
+        }
+
+        // kalau belum valid dan masih ada retry tunggu dulu
+        if (attempt < maxRetry) {
+            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${delayMs/1000} detik..`);
+            await sleep(delayMs);
+        }
+    }
+}
+
