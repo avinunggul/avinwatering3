@@ -282,7 +282,7 @@ async function startBot() {
             const kodeWilayah = await getKodeWilayahByRaspiId(raspiId);
             let pesanCuaca = '';
             if (kodeWilayah) {
-                pesanCuaca = await getPrakiraanCuaca(kodeWilayah);
+                pesanCuaca = await getPrakiraanCuacaRetry(kodeWilayah);
             } else {
                 pesanCuaca = 'Kode wilayah tidak ditemukan untuk user ini.\n\n';
             }
@@ -430,3 +430,17 @@ async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 3, dela
     }
 }
 
+async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 3, delayMs = 5000) {
+    for (let attempt = 1; attempt <= maxRetry; attempt++){
+        const pesan = await getPrakiraanCuaca(kodeWilayah);
+        if (!pesan.includes('tidak ditemukan') && !pesan.includes('tidak tersedia')) {
+            return pesan;
+        }
+
+        if (attempt < maxRetry) {
+            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${delayMs/1000} detik..`);
+            await sleep(delayMs);
+        }
+    }
+    return `Maaf, data prakiraan cuaca tidak tersedia saat ini.\n\n`
+}
