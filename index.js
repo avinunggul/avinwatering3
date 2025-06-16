@@ -282,7 +282,7 @@ async function startBot() {
             const kodeWilayah = await getKodeWilayahByRaspiId(raspiId);
             let pesanCuaca = '';
             if (kodeWilayah) {
-                pesanCuaca = await getPrakiraanCuacaRetry(kodeWilayah);
+                pesanCuaca = await getPrakiraanCuacaWithRetry(kodeWilayah);
             } else {
                 pesanCuaca = 'Kode wilayah tidak ditemukan untuk user ini.\n\n';
             }
