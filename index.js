@@ -225,7 +225,7 @@ async function startBot() {
                 console.error(`Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
             }
         }
-    }, 2 * 60 * 60 * 1000);
+    }, 2 * 60 * 1000);
 
     // Pasang listener watering_status untuk semua user saat pertama kali WA connect
     getAllRaspiIds().then(raspiUsers => {
