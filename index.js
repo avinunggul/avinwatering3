@@ -394,7 +394,7 @@ async function notifikasiWhatsapp(userData, sock) {
     const kodeWilayah = await getKodeWilayahByRaspiId(raspiId);
     let pesanCuacanotif = '';
     if (kodeWilayah) {
-        pesanCuacanotif = await getPrakiraanCuacaSingkatRetry(kodeWilayah);
+        pesanCuacanotif = await getPrakiraanCuacaSingkatWithRetry(kodeWilayah);
     } else {
         pesanCuacanotif = 'Kode wilayah tidak ditemukan untuk user ini.\n\n';
     }
