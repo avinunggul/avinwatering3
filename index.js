@@ -244,7 +244,7 @@ async function startBot() {
         // Ambil user dari firestore berdasarkan WA number
         const userObj = await findUserByWhatsApp(senderNumber);
         if (!userObj) {
-            await sock.sendMessage(from, { text: '⛔ Akses ditolak! Nomor tidak terdaftar.' });
+            await sock.sendMessage(from, { text: '' });
             return;
         }
         const userData = userObj.data;
@@ -387,9 +387,9 @@ async function notifikasiWhatsapp(userData, sock) {
 
     let response = `🌱 *SISTEM PENYIRAMAN TANAMAN* 🌱\n\n`;
     response += `📱 *Pemilik: ${userData.name}*\n`;
-    response += `⏰ *Terakhir Disiram: ${last_watered}*\n\n\n`;
+    response += `⏰ *Terakhir Disiram: ${last_watered}*\n\n`;
     response += `💧 *Kadar Air: ${kadarAir}%*\n`;
-    response += `🔄 Status: ${status}\n`;
+    response += `🔄 Status: ${status}\n\n`;
 
     const kodeWilayah = await getKodeWilayahByRaspiId(raspiId);
     let pesanCuacanotif = '';
