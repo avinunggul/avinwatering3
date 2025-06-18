@@ -413,7 +413,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 3, delayMs = 5000) {
+async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 6, delayMs = 5000) {
     for (let attempt = 1; attempt <= maxRetry; attempt++) {
         const pesan = await getPrakiraanCuacaSingkat(kodeWilayah);
 
@@ -431,7 +431,7 @@ async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 3, dela
     return `Maaf, data prakiraan cuaca tidak tersedian saat ini.\n\n`
 }
 
-async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 3, delayMs = 5000) {
+async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 6, delayMs = 5000) {
     for (let attempt = 1; attempt <= maxRetry; attempt++){
         const pesan = await getPrakiraanCuaca(kodeWilayah);
         if (!pesan.includes('tidak ditemukan') && !pesan.includes('tidak tersedia')) {
