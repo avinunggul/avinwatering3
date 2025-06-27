@@ -74,12 +74,21 @@ async function getPrakiraanCuaca(kodeWilayah) {
                         typeof obj.t === 'number' &&
                         typeof obj.weather_desc !== 'undefined'
                     ) {
+                        let icon = '☁️';
+                        const cuaca = (data[obj.weather_desc] || '').toUpperCase();
+
+                        if (cuaca.includes('HUJAN')) icon = '🌧️';
+                        else if (cuaca.includes('CERAH')) icon = '☀️';
+                        else if (cuaca.includes('BERAWAN')) icon = '🌥️';
+                        else if (cuaca.includes('MENDUNG')) icon = '☁️';
+
+
                         forecasts.push({
                             waktu: data[obj.local_datetime] ?? '-',
                             cuaca: data[obj.weather_desc] ?? '-',
                             suhu: data[obj.t] ?? '-',
-                            icon: obj.image ? data[obj.image] : '',
-                            kelembapan: typeof obj.hu === 'number' ? obj.hu : '-'
+                            kelembapan: typeof obj.hu === 'number' ? obj.hu : '-',
+                            icon
                         });
                     }
                 });
@@ -93,7 +102,7 @@ async function getPrakiraanCuaca(kodeWilayah) {
 
         forecasts.slice(0, 3).forEach(f => {
             pesan += `🕒 *${f.waktu}*\n`;
-            pesan += `Cuaca: ${f.cuaca}\n`;
+            pesan += `Cuaca: ${f.cuaca} ${f.icon}\n`;
             pesan += `Suhu: ${f.suhu}°C\n`;
             pesan += `Kelembapan: ${f.kelembapan}%\n\n`;
         });
@@ -132,7 +141,7 @@ function formatPhoneNumber(jid) {
 
 const wateringListeners = new Set();
 
-// --- Pantau perubahan watering_status 
+// --- mengirimkan pesan saat status done dari firebase
 async function listenWateringStatus(raspiId, sock) {
     if (wateringListeners.has(raspiId)) return;
     wateringListeners.add(raspiId);
@@ -246,6 +255,8 @@ async function startBot() {
         raspiUsers.forEach(user => listenWateringStatus(user.raspiId, sock));
     });
 
+
+    // mengirim pesan saat user ketik status, siram dan stop siram
     sock.ev.on('messages.upsert', async ({ messages }) => {
         const msg = messages[0];
         if (!msg.message || msg.key.fromMe) return;
@@ -305,6 +316,12 @@ async function startBot() {
             response += `\n\n ketik *SIRAM SEKARANG* untuk menyiram tanaman.`;
 
             await sock.sendMessage(from, { text: response });
+            return;
+        }
+
+        if (text.includes('stop') && text.includes('siram')) {
+            await db.ref(`users/${raspiId}/watering_status`).set('stop');
+            await sock.sendMessage(from, { text: `🚫 Penyiraman dihentikan untuk device ${raspiId}!` });
             return;
         }
 
