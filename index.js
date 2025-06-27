@@ -195,6 +195,9 @@ function setupFirestoreListener(sock) {
     });
 }
 
+let reconnectAttempts = 0;
+const MAX_RECONNECT = 20;
+
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth');
     const sock = makeWASocket({ auth: state });
@@ -206,11 +209,22 @@ async function startBot() {
         if (qr) qrcode.generate(qr, { small: true });
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) startBot();
+            if (shouldReconnect && reconnectAttempts < MAX_RECONNECT) {
+                reconnectAttempts++;
+                console.log(`[RECONNECT] Attempt ${reconnectAttempts} of ${MAX_RECONNECT}, retrying in 5s...`);
+                setTimeout(() => {
+                    startBot();
+                }, 5000);
+            } else if (!shouldReconnect) {
+                console.log('[RECONNECT] Tidak reconnect, status logged out.');
+            } else {
+                console.log(`[RECONNECT] Sudah mencapai batas maksimal percobaan (${MAX_RECONNECT}).`);
+            }
         }
         if (connection === 'open') {
+            reconnectAttempts = 0; // reset kalau sukses connect
             console.log(`✅ Terhubung! Memantau seluruh device...`);
-            setupFirestoreListener(sock); // hanya sekali setiap koneksi WA open
+            setupFirestoreListener(sock);
         }
     });
 
@@ -402,7 +416,12 @@ async function notifikasiWhatsapp(userData, sock) {
     response += pesanCuacanotif;
     response += `\n\nKetik *SIRAM SEKARANG* untuk menyiram tanaman.`;
 
-    await sock.sendMessage(from, { text: response });
+    try {
+        await sock.sendMessage(from, { text: response });
+        console.log(`[NOTIF] SUKSES kirim ke ${userData.name || raspiId} (${from})`);
+    } catch (err) {
+        console.log(`[NOTIF] GAGAL kirim ke ${userData.name || raspiId} (${from}): ${err.message}`);
+    }
 }
 
 
