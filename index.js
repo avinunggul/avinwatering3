@@ -432,7 +432,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 6, delayMs = 5000) {
+async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 20, delayMs = 5000) {
     for (let attempt = 1; attempt <= maxRetry; attempt++) {
         const pesan = await getPrakiraanCuacaSingkat(kodeWilayah);
 
