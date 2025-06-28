@@ -215,9 +215,11 @@ async function reattachAllListeners(sock) {
 }
 
 let notifInterval = null
+
 function getNextEvenHourTimeout(){
     const now = new Date();
-    let nextHour = now.getHours();
+    const localNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    let nextHour = localNow.getHours();
 
     //cari kelipatan 2 berikutnya dari jam sekarang
     if (nextHour % 2 === 0) {
