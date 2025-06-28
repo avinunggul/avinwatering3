@@ -213,6 +213,9 @@ async function reattachAllListeners(sock) {
         listenWateringStatus(user.raspiId, sock);
     });
 }
+
+let notifInterval = null
+
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth');
     const sock = makeWASocket({ auth: state });
@@ -246,8 +249,12 @@ async function startBot() {
         }
     });
 
-    // Notifikasi berkala
-    setInterval(async () => {
+    if (notifInterval) {
+        clearInterval(notifInterval);
+        console.log('Interval notif lama di clear sebelum buat baru.');
+    }
+
+    notifInterval = setInterval(async () => {
         console.log('⏰ Mengirim status otomatis ke semua pengguna...');
         const users = await getAllRaspiIds();
         for (const user of users) {
@@ -257,7 +264,7 @@ async function startBot() {
                 console.error(`Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
             }
         }
-    }, 2 * 60 * 1000);
+    }, 2 * 60 * 60 * 1000);
 
     // Pasang listener watering_status untuk semua user saat pertama kali WA connect
     getAllRaspiIds().then(raspiUsers => {
