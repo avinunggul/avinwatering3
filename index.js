@@ -231,29 +231,40 @@ function getNextEvenHourTimeout(){
     next.setHours(nextHour, 0, 0, 0); //jam berikutnya di HH:00:00
     let ms = next - now;
     if (ms < 0) ms += 24 * 60 * 60 * 1000;
+
+    console.log(`⏰ Jadwal notifikasi cuaca berikutnya jam ${nextHour}:00 (dalam ${Math.round(ms/60000)} menit)`);
     return ms;
 }
 
 function startScheduleNotif(sock) {
-    const scheduleNext = () => {
-        const ms = getNextEvenHourTimeout();
-        console.log(`Next notif in ${ms / 1000 / 60} menit`);
-        setTimeout(async () => {
-            //kirim notif ke semua user
-            console.log('⏰ [SCHEDULED] Kirim status otomatis ke semua pengguna...');
-            const users = await getAllRaspiIds();
-            for (const user of users) {
-                try {
-                    await notifikasiWhatsapp(user, sock);
-                } catch (e) {
-                     console.error(`[SCHEDULED] Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
-                }
-            }
-            // setelah selesai, pasang interval 2 jam kedepan lagi di jam genap
-            scheduleNext(); 
-        }, ms);
+    const now = new Date();
+    const jam = now.getHours();
+    const menit = now.getMinutes();
+
+    const isEvenHour = jam % 2 === 0 && menit === 0;
+
+    const kirimNotifikasi = async () => {
+        const allUsers = await getAllRaspiIds();
+        for (const user of allUsers) {
+            const kodeWilayah = await getKodeWilayahByRaspiId(user, raspiId);
+            if(!kodeWilayah) continue;
+            const waId = user.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
+            const pesanCuaca = await getPrakiraanCuaca(kodeWilayah);
+            await sock.sendMessage(waId, {text: pesanCuaca});
+        }
     };
-    scheduleNext();
+
+    if (isEvenHour) {
+        kirimNotifikasi();
+    }
+
+    const delay = getNextEvenHourTimeout();
+
+    setTimeout(() => {
+        kirimNotifikasi();
+
+    notifInterval = setInterval(kirimNotifikasi, 2 * 60 * 60 * 1000);
+    }, delay);
 }
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth');
