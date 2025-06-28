@@ -215,7 +215,46 @@ async function reattachAllListeners(sock) {
 }
 
 let notifInterval = null
+function getNextEvenHourTimeout(){
+    const now = new Date();
+    let nextHour = now.getHours();
 
+    //cari kelipatan 2 berikutnya dari jam sekarang
+    if (nextHour % 2 === 0) {
+        nextHour += 2;
+    } else {
+        nextHour += 1;
+    }
+    if (nextHour >= 24) nextHour -= 24;
+
+    const next = new Date(now);
+    next.setHours(nextHour, 0, 0, 0); //jam berikutnya di HH:00:00
+    let ms = next - now;
+    if (ms < 0) ms += 24 * 60 * 60 * 1000;
+    return ms;
+}
+
+function startScheduleNotif(sock) {
+    const scheduleNext = () => {
+        const ms = getNextEvenHourTimeout();
+        console.log(`Next notif in ${ms / 1000 / 60} menit`);
+        setTimeout(async () => {
+            //kirim notif ke semua user
+            console.log('⏰ [SCHEDULED] Kirim status otomatis ke semua pengguna...');
+            const users = await getAllRaspiIds();
+            for (const user of users) {
+                try {
+                    await notifikasiWhatsapp(user, sock);
+                } catch (e) {
+                     console.error(`[SCHEDULED] Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
+                }
+            }
+            // setelah selesai, pasang interval 2 jam kedepan lagi di jam genap
+            scheduleNext(); 
+        }, ms);
+    };
+    scheduleNext();
+}
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth');
     const sock = makeWASocket({ auth: state });
@@ -254,17 +293,7 @@ async function startBot() {
         console.log('Interval notif lama di clear sebelum buat baru.');
     }
 
-    notifInterval = setInterval(async () => {
-        console.log('⏰ Mengirim status otomatis ke semua pengguna...');
-        const users = await getAllRaspiIds();
-        for (const user of users) {
-            try {
-                await notifikasiWhatsapp(user, sock);
-            } catch (e) {
-                console.error(`Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
-            }
-        }
-    }, 2 * 60 * 60 * 1000);
+    startScheduleNotif(sock);
 
     // Pasang listener watering_status untuk semua user saat pertama kali WA connect
     getAllRaspiIds().then(raspiUsers => {
