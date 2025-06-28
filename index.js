@@ -257,7 +257,7 @@ async function startBot() {
                 console.error(`Gagal kirim status ke ${user.name || user.raspiId}: `, e.message)
             }
         }
-    }, 2 * 60 * 60 * 1000);
+    }, 2 * 60 * 1000);
 
     // Pasang listener watering_status untuk semua user saat pertama kali WA connect
     getAllRaspiIds().then(raspiUsers => {
@@ -401,8 +401,8 @@ async function getPrakiraanCuacaSingkat(kodeWilayah) {
 
 // --- Notifikasi WhatsApp tiap 2 jam
 async function notifikasiWhatsapp(user, sock) {
-    const raspiId = userData.raspiId;
-    const from = userData.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
+    const raspiId = user.raspiId;
+    const from = user.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
 
     const datasensor = await db.ref(`users/${raspiId}/data_kadar_air`).limitToLast(1).once('value');
     const data = datasensor.val();
@@ -426,7 +426,7 @@ async function notifikasiWhatsapp(user, sock) {
     const last_watered = mainData?.last_watered ?? '-';
 
     let response = `🌱 *SISTEM PENYIRAMAN TANAMAN* 🌱\n\n`;
-    response += `📱 *Pemilik: ${userData.name}*\n`;
+    response += `📱 *Pemilik: ${user.name}*\n`;
     response += `⏰ *Terakhir Disiram: ${last_watered}*\n\n`;
     response += `💧 *Kadar Air: ${kadarAir}%*\n`;
     response += `🔄 Status: ${status}\n\n`;
@@ -444,9 +444,9 @@ async function notifikasiWhatsapp(user, sock) {
 
     try {
         await sock.sendMessage(from, { text: response });
-        console.log(`[NOTIF] SUKSES kirim ke ${userData.name || raspiId} (${from})`);
+        console.log(`[NOTIF] SUKSES kirim ke ${user.name || raspiId} (${from})`);
     } catch (err) {
-        console.log(`[NOTIF] GAGAL kirim ke ${userData.name || raspiId} (${from}): ${err.message}`);
+        console.log(`[NOTIF] GAGAL kirim ke ${user.name || raspiId} (${from}): ${err.message}`);
     }
 }
 
