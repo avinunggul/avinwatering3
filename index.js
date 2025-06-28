@@ -342,7 +342,6 @@ async function startBot() {
     });
 }
 startBot();
-setupFirestoreListener(sock);
 
 // --- Prakiraan cuaca singkat
 async function getPrakiraanCuacaSingkat(kodeWilayah) {
