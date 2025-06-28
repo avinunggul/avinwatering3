@@ -207,9 +207,18 @@ function setupFirestoreListener(sock) {
 let reconnectAttempts = 0;
 const MAX_RECONNECT = 20;
 
+async function reattachAllListeners(sock) {
+    const allUsers = await getAllRaspiIds();
+    allUsers.forEach(user => {
+        listenWateringStatus(user.raspiId, sock);
+    });
+}
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth');
     const sock = makeWASocket({ auth: state });
+
+    setupFirestoreListener(sock);
+    await reattachAllListeners(sock);
 
     sock.ev.on('creds.update', saveCreds);
 
@@ -333,6 +342,7 @@ async function startBot() {
     });
 }
 startBot();
+setupFirestoreListener(sock);
 
 // --- Prakiraan cuaca singkat
 async function getPrakiraanCuacaSingkat(kodeWilayah) {
@@ -391,7 +401,7 @@ async function getPrakiraanCuacaSingkat(kodeWilayah) {
 }
 
 // --- Notifikasi WhatsApp tiap 2 jam
-async function notifikasiWhatsapp(userData, sock) {
+async function notifikasiWhatsapp(user, sock) {
     const raspiId = userData.raspiId;
     const from = userData.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
 
