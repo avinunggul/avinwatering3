@@ -223,7 +223,29 @@ async function reattachAllListeners(sock) {
 let notifInterval = null
 const { DateTime } = require('luxon');
 function getNextEvenHourTimeout(){
-     return 10000; // 10 detik
+    const now = DateTime.now().setZone('Asia/Jakarta');
+    let nextHour = now.hour();
+
+    //cari kelipatan 2 berikutnya dari jam sekarang
+    if (nextHour % 2 === 0) {
+        nextHour += 2;
+    } else {
+        nextHour += 1;
+    }
+    if (nextHour >= 24) nextHour -= 24;
+
+    const next = now.set({
+        hour: nextHour,
+        minute: 0,
+        second: 0,
+        millisecond: 0
+    });
+    
+    const ms = next.toMillis() - now.toMillis();
+
+    console.log(`⏰ Jadwal notifikasi cuaca berikutnya jam ${nextHour}:00 (dalam ${Math.round(ms/60000)} menit)`);
+    return ms;
+    //return 10000; //notif 10 detik untuk tes kode diatas dihapus semua.
 }
 
 function startScheduleNotif(sock) {
