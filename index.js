@@ -248,7 +248,7 @@ function startScheduleNotif(sock) {
     const kirimNotifikasi = async () => {
         const allUsers = await getAllRaspiIds();
         for (const user of allUsers) {
-            const kodeWilayah = await getKodeWilayahByRaspiId(user, raspiId);
+            const kodeWilayah = await getKodeWilayahByRaspiId(user.raspiId);
             if(!kodeWilayah) continue;
             const waId = user.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
             const pesanCuaca = await getPrakiraanCuaca(kodeWilayah);
@@ -258,7 +258,7 @@ function startScheduleNotif(sock) {
 
     if (isEvenHour) {
         kirimNotifikasi();
-    }
+    };
 
     const delay = getNextEvenHourTimeout();
 
