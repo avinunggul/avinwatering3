@@ -224,7 +224,7 @@ let notifInterval = null
 const { DateTime } = require('luxon');
 function getNextEvenHourTimeout(){
     const now = DateTime.now().setZone('Asia/Jakarta');
-    let nextHour = now.hour();
+    let nextHour = now.hour;
 
     //cari kelipatan 2 berikutnya dari jam sekarang
     if (nextHour % 2 === 0) {
