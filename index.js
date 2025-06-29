@@ -223,29 +223,8 @@ async function reattachAllListeners(sock) {
 let notifInterval = null
 const { DateTime } = require('luxon');
 function getNextEvenHourTimeout(){
-    const now = DateTime.now().setZone('Asia/Jakarta');
-    let nextHour = now.hour();
-
-    //cari kelipatan 2 berikutnya dari jam sekarang
-    if (nextHour % 2 === 0) {
-        nextHour += 2;
-    } else {
-        nextHour += 1;
-    }
-    if (nextHour >= 24) nextHour -= 24;
-
-    const next = now.set({
-        hour: nextHour,
-        minute: 0,
-        second: 0,
-        millisecond: 0
-    });
     
-    const ms = next.toMillis() - now.toMillis();
-
-    console.log(`⏰ Jadwal notifikasi cuaca berikutnya jam ${nextHour}:00 (dalam ${Math.round(ms/60000)} menit)`);
-    return ms;
-    //return 10000; //notif delay 10 detik untuk tes kode diatas dihapus semua kemudian untuk interval nya diubah manual dibawah
+    return 10000; //notif delay 10 detik untuk tes kode diatas dihapus semua kemudian untuk interval nya diubah manual dibawah
 }
 
 function startScheduleNotif(sock) {
@@ -261,7 +240,7 @@ function startScheduleNotif(sock) {
             const kodeWilayah = await getKodeWilayahByRaspiId(user.raspiId);
             if(!kodeWilayah) continue;
             const waId = user.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
-            const pesanCuaca = await getPrakiraanCuaca(kodeWilayah);
+            const pesanCuaca = await getPrakiraanCuacaSingkat(kodeWilayah);
             await sock.sendMessage(waId, {text: pesanCuaca});
             console.log(`[NOTIF] Kirim notifikasi di jam: ${DateTime.now().setZone('Asia/Jakarta').toFormat('HH:mm:ss')}`);
         }
@@ -276,7 +255,7 @@ function startScheduleNotif(sock) {
     setTimeout(() => {
         kirimNotifikasi();
 
-    notifInterval = setInterval(kirimNotifikasi, 2 * 60 * 60 * 1000);
+    notifInterval = setInterval(kirimNotifikasi, 10 * 1000);
     }, delay);
 }
 async function startBot() {
