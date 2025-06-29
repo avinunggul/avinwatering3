@@ -139,17 +139,20 @@ function formatPhoneNumber(jid) {
     return jid.replace(/@s\.whatsapp\.net/g, '').replace(/^62/, '0');
 }
 
-const wateringListeners = new Set();
+const wateringStatusListeners = {};
 
 // --- mengirimkan pesan saat status done dari firebase
 async function listenWateringStatus(raspiId, sock) {
-    if (wateringListeners.has(raspiId)) return;
-    wateringListeners.add(raspiId);
+    if (wateringStatusListeners[raspiId]) {
+        const { ref, callback } = wateringStatusListeners[raspiId];
+        ref.off('value', callback);
+    }
 
     const statusRef = db.ref(`users/${raspiId}/watering_status`);
-    statusRef.on('value', async (snapshot) => {
+
+    const callback = async (snapshot) => {
         const newStatus = snapshot.val();
-        if (newStatus === 'done') {
+         if (newStatus === 'done') {
             const mainDataSnap = await db.ref(`users/${raspiId}`).once('value');
             const mainData = mainDataSnap.val();
             const dataSensorSnap = await db.ref(`users/${raspiId}/data_kadar_air`).limitToLast(1).once('value');
@@ -186,7 +189,10 @@ async function listenWateringStatus(raspiId, sock) {
             response += `🚿 Methode Penyiraman: ${watering_method}`;
             await sock.sendMessage(waId, { text: response });
         }
-    });
+    };
+
+    wateringStatusListeners[raspiId] = { ref: statusRef, callback};
+    statusRef.on('value', callback);
 }
 
 // --- Listener Firestore hanya sekali
@@ -215,27 +221,9 @@ async function reattachAllListeners(sock) {
 }
 
 let notifInterval = null
-
+const { DateTime } = require('luxon');
 function getNextEvenHourTimeout(){
-    const now = new Date();
-    const localNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    let nextHour = localNow.getHours();
-
-    //cari kelipatan 2 berikutnya dari jam sekarang
-    if (nextHour % 2 === 0) {
-        nextHour += 2;
-    } else {
-        nextHour += 1;
-    }
-    if (nextHour >= 24) nextHour -= 24;
-
-    const next = new Date(now);
-    next.setHours(nextHour, 0, 0, 0); //jam berikutnya di HH:00:00
-    let ms = next - now;
-    if (ms < 0) ms += 24 * 60 * 60 * 1000;
-
-    console.log(`⏰ Jadwal notifikasi cuaca berikutnya jam ${nextHour}:00 (dalam ${Math.round(ms/60000)} menit)`);
-    return ms;
+     return 10000; // 10 detik
 }
 
 function startScheduleNotif(sock) {
@@ -253,6 +241,7 @@ function startScheduleNotif(sock) {
             const waId = user.whatsapp.replace(/^0/, '62') + '@s.whatsapp.net';
             const pesanCuaca = await getPrakiraanCuaca(kodeWilayah);
             await sock.sendMessage(waId, {text: pesanCuaca});
+            console.log(`[NOTIF] Kirim notifikasi di jam: ${DateTime.now().setZone('Asia/Jakarta').toFormat('HH:mm:ss')}`);
         }
     };
 
