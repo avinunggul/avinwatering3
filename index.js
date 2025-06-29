@@ -245,7 +245,7 @@ function getNextEvenHourTimeout(){
 
     console.log(`⏰ Jadwal notifikasi cuaca berikutnya jam ${nextHour}:00 (dalam ${Math.round(ms/60000)} menit)`);
     return ms;
-    //return 10000; //notif 10 detik untuk tes kode diatas dihapus semua.
+    //return 10000; //notif delay 10 detik untuk tes kode diatas dihapus semua kemudian untuk interval nya diubah manual dibawah
 }
 
 function startScheduleNotif(sock) {
