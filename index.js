@@ -102,9 +102,9 @@ async function getPrakiraanCuaca(kodeWilayah) {
 
         forecasts.slice(0, 3).forEach(f => {
             pesan += `🕒 *${f.waktu}*\n`;
-            pesan += `Cuaca: ${f.cuaca} ${f.icon}\n`;
-            pesan += `Suhu: ${f.suhu}°C\n`;
-            pesan += `Kelembapan: ${f.kelembapan}%\n\n`;
+            pesan += `${f.icon} Cuaca: ${f.cuaca} ${f.icon}\n`;
+            pesan += `🌡 Suhu: ${f.suhu}°C\n`;
+            pesan += `💧 Kelembapan: ${f.kelembapan}%\n\n`;
         });
 
         return pesan;
