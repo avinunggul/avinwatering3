@@ -60,7 +60,7 @@ async function getPrakiraanCuaca(kodeWilayah) {
         const kecamatan = (data?.[20]?.description || data?.[20]) ?? '-';
 
         let pesan = `\n*Prakiraan Cuaca 3 Jam ke Depan*\n`;
-        pesan += `Lokasi:  ${kecamatan}, ${kotkab}, ${provinsi}\n\n`;
+        pesan += `📍 Lokasi:  ${kecamatan}, ${kotkab}, ${provinsi}\n\n`;
 
         const forecasts = [];
 
@@ -101,7 +101,7 @@ async function getPrakiraanCuaca(kodeWilayah) {
         }
 
         forecasts.slice(0, 3).forEach(f => {
-            pesan += `🕒 *${f.waktu}*\n`;
+            pesan += `*${f.waktu}*\n`;
             pesan += `${f.icon} Cuaca: ${f.cuaca} ${f.icon}\n`;
             pesan += `🌡 Suhu: ${f.suhu}°C\n`;
             pesan += `💧 Kelembapan: ${f.kelembapan}%\n\n`;
