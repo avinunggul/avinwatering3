@@ -531,12 +531,8 @@ async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 40, del
 
         // kalau belum valid dan masih ada retry tunggu dulu
         if (attempt < maxRetry) {
-            let thisDelay = delayMs;
-            if (attempt % 5 === 0) {
-                thisDelay = 30000;
-            }
-            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${thisDelay/1000} detik..`);
-            await sleep(thisDelay);
+            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${delayMs/1000} detik..`);
+            await sleep(delayMs);
         }
     }
     return `Maaf, data prakiraan cuaca tidak tersedian saat ini.\n\n`
@@ -556,3 +552,5 @@ async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 6, delayMs = 5
     }
     return `Maaf, data prakiraan cuaca tidak tersedia saat ini.\n\n`
 }
+
+untuk notif dua jam kenapa retry nya masih max 20 kali tiap 5 detik harusnya max 40 kali tiap 10 detik jika tiap kelipatan 5 kai coba menunggu 30 detik
