@@ -211,7 +211,7 @@ function setupFirestoreListener(sock) {
 }
 
 let reconnectAttempts = 0;
-const MAX_RECONNECT = 20;
+const MAX_RECONNECT = 50;
 
 async function reattachAllListeners(sock) {
     const allUsers = await getAllRaspiIds();
@@ -291,10 +291,10 @@ async function startBot() {
             const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect && reconnectAttempts < MAX_RECONNECT) {
                 reconnectAttempts++;
-                console.log(`[RECONNECT] Attempt ${reconnectAttempts} of ${MAX_RECONNECT}, retrying in 5s...`);
+                console.log(`[RECONNECT] Attempt ${reconnectAttempts} of ${MAX_RECONNECT}, retrying in 10s...`);
                 setTimeout(() => {
                     startBot();
-                }, 5000);
+                }, 10000);
             } else if (!shouldReconnect) {
                 console.log('[RECONNECT] Tidak reconnect, status logged out.');
             } else {
