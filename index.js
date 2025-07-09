@@ -520,7 +520,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 20, delayMs = 5000) {
+async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 40, delayMs = 10000) {
     for (let attempt = 1; attempt <= maxRetry; attempt++) {
         const pesan = await getPrakiraanCuacaSingkat(kodeWilayah);
 
@@ -531,8 +531,12 @@ async function getPrakiraanCuacaSingkatWithRetry(kodeWilayah, maxRetry = 20, del
 
         // kalau belum valid dan masih ada retry tunggu dulu
         if (attempt < maxRetry) {
-            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${delayMs/1000} detik..`);
-            await sleep(delayMs);
+            let thisDelay = delayMs;
+            if (attempt % 5 === 0) {
+                thisDelay = 30000;
+            }
+            console.log(`Cuaca belum tersedia, retry ke ${attempt}, tunggu ${thisDelay/1000} detik..`);
+            await sleep(thisDelay);
         }
     }
     return `Maaf, data prakiraan cuaca tidak tersedian saat ini.\n\n`
