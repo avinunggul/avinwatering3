@@ -552,5 +552,3 @@ async function getPrakiraanCuacaWithRetry(kodeWilayah, maxRetry = 6, delayMs = 5
     }
     return `Maaf, data prakiraan cuaca tidak tersedia saat ini.\n\n`
 }
-
-untuk notif dua jam kenapa retry nya masih max 20 kali tiap 5 detik harusnya max 40 kali tiap 10 detik jika tiap kelipatan 5 kai coba menunggu 30 detik
