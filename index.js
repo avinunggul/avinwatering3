@@ -153,6 +153,8 @@ async function listenWateringStatus(raspiId, sock) {
     const callback = async (snapshot) => {
         const newStatus = snapshot.val();
          if (newStatus === 'done') {
+
+            await sleep(12000);
             const mainDataSnap = await db.ref(`users/${raspiId}`).once('value');
             const mainData = mainDataSnap.val();
             const dataSensorSnap = await db.ref(`users/${raspiId}/data_kadar_air`).limitToLast(1).once('value');
